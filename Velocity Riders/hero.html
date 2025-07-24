@@ -118,6 +118,51 @@
             background-clip: text;
         }
 
+        /* Search suggestions styling */
+        .search-suggestions {
+            max-height: 300px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+        }
+        
+        .search-suggestions::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .search-suggestions::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .search-suggestions::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+        
+        .suggestion-item {
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .suggestion-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: #667eea;
+            transform: translateX(5px);
+        }
+        
+        .suggestion-highlight {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+        
+        .bike-brand {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
         /* Captcha Modal Styles */
         .captcha-modal {
             display: none;
@@ -318,19 +363,35 @@
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
-                        <span class="font-medium">Search</span>
+                        <span class="font-medium">Search Motorcycles</span>
                     </div>
                     
                     <!-- Search Input (Hidden by default) -->
-                    <input 
-                        id="searchInput" 
-                        type="text" 
-                        placeholder="Search motorcycles..." 
-                        class="w-full bg-transparent outline-none text-gray-200 hidden"
-                    >
+                    <div id="searchInputContainer" class="hidden flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <input 
+                            id="searchInput" 
+                            type="text" 
+                            placeholder="Search motorcycles..." 
+                            class="flex-1 bg-transparent outline-none text-gray-200 placeholder-gray-400"
+                            autocomplete="off"
+                        >
+                        <button id="clearSearch" class="ml-2 text-gray-400 hover:text-gray-200 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
                 
-                <!-- Search Dropdown Menu -->
+                <!-- Search Suggestions Dropdown -->
+                <div id="searchSuggestions" class="absolute top-full left-0 right-0 mt-1 glassmorphism rounded-2xl p-2 hidden dropdown-enter z-50 search-suggestions">
+                    <!-- Suggestions will be populated by JavaScript -->
+                </div>
+                
+                <!-- Navigation Dropdown Menu -->
                 <div id="dropdownMenu" class="absolute top-full left-0 right-0 mt-1 glassmorphism rounded-2xl p-4 hidden dropdown-enter z-50">
                     <nav class="space-y-3">
                         <a href="hero.html" class="block px-4 py-2 rounded-lg text-gray-200 hover:bg-black/20 transition-colors duration-200 font-medium">
@@ -408,6 +469,369 @@
     </div>
 
     <script>
+        // Bike database with all available motorcycles
+        const bikeDatabase = [
+            { 
+                id: 'ApacheRTR160', 
+                name: 'Apache RTR 160', 
+                brand: 'TVS',
+                file: 'ApacheRTR160.html',
+                keywords: ['apache', 'rtr', '160', 'tvs', 'sport']
+            },
+            { 
+                id: 'ApacheRR310', 
+                name: 'Apache RR 310', 
+                brand: 'TVS',
+                file: 'ApacheRR310.html',
+                keywords: ['apache', 'rr', '310', 'tvs', 'sport', 'racing']
+            },
+            { 
+                id: 'Ntorq125', 
+                name: 'Ntorq 125', 
+                brand: 'TVS',
+                file: 'Ntorq125.html',
+                keywords: ['ntorq', '125', 'tvs', 'scooter']
+            },
+            { 
+                id: 'Classic350', 
+                name: 'Classic 350', 
+                brand: 'Royal Enfield',
+                file: 'Classic350.html',
+                keywords: ['classic', '350', 'royal', 'enfield', 'cruiser']
+            },
+            { 
+                id: 'Himalayan', 
+                name: 'Himalayan', 
+                brand: 'Royal Enfield',
+                file: 'Himalayan.html',
+                keywords: ['himalayan', 'royal', 'enfield', 'adventure', 'offroad']
+            },
+            { 
+                id: 'Interceptor650', 
+                name: 'Interceptor 650', 
+                brand: 'Royal Enfield',
+                file: 'Interceptor650.html',
+                keywords: ['interceptor', '650', 'royal', 'enfield', 'twin', 'classic']
+            },
+            { 
+                id: 'Street750', 
+                name: 'Street 750', 
+                brand: 'Harley Davidson',
+                file: 'Street750.html',
+                keywords: ['street', '750', 'harley', 'davidson', 'cruiser']
+            },
+            { 
+                id: 'Iron883', 
+                name: 'Iron 883', 
+                brand: 'Harley Davidson',
+                file: 'Iron883.html',
+                keywords: ['iron', '883', 'harley', 'davidson', 'sportster']
+            },
+            { 
+                id: 'FatBoy', 
+                name: 'Fat Boy', 
+                brand: 'Harley Davidson',
+                file: 'FatBoy.html',
+                keywords: ['fat', 'boy', 'fatboy', 'harley', 'davidson', 'cruiser']
+            },
+            { 
+                id: 'Duke390', 
+                name: 'Duke 390', 
+                brand: 'KTM',
+                file: 'Duke390.html',
+                keywords: ['duke', '390', 'ktm', 'naked', 'sport']
+            },
+            { 
+                id: 'RC390', 
+                name: 'RC 390', 
+                brand: 'KTM',
+                file: 'RC390.html',
+                keywords: ['rc', '390', 'ktm', 'sport', 'racing', 'track']
+            },
+            { 
+                id: 'Adventure390', 
+                name: 'Adventure 390', 
+                brand: 'KTM',
+                file: 'Adventure390.html',
+                keywords: ['adventure', '390', 'ktm', 'adv', 'offroad', 'touring']
+            }
+        ];
+
+        // Search functionality
+        class BikeSearch {
+            constructor() {
+                this.searchInput = document.getElementById('searchInput');
+                this.searchSuggestions = document.getElementById('searchSuggestions');
+                this.searchContainer = document.getElementById('searchContainer');
+                this.searchDisplay = document.getElementById('searchDisplay');
+                this.searchInputContainer = document.getElementById('searchInputContainer');
+                this.clearSearch = document.getElementById('clearSearch');
+                this.dropdownMenu = document.getElementById('dropdownMenu');
+                
+                this.isSearchMode = false;
+                this.selectedIndex = -1;
+                this.currentSuggestions = [];
+                
+                this.initEventListeners();
+            }
+            
+            initEventListeners() {
+                // Search container click
+                this.searchContainer.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (!this.isSearchMode) {
+                        this.enableSearchMode();
+                    }
+                });
+                
+                // Search input events
+                this.searchInput.addEventListener('input', (e) => {
+                    this.handleSearch(e.target.value);
+                });
+                
+                this.searchInput.addEventListener('keydown', (e) => {
+                    this.handleKeyDown(e);
+                });
+                
+                // Clear search button
+                this.clearSearch.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.clearSearchInput();
+                });
+                
+                // Search container hover for navigation menu
+                this.searchContainer.addEventListener('mouseenter', () => {
+                    if (!this.isSearchMode) {
+                        this.showNavigationMenu();
+                    }
+                });
+                
+                this.searchContainer.addEventListener('mouseleave', (e) => {
+                    if (!this.isSearchMode && !this.dropdownMenu.contains(e.relatedTarget)) {
+                        setTimeout(() => {
+                            if (!this.dropdownMenu.matches(':hover')) {
+                                this.hideNavigationMenu();
+                            }
+                        }, 150);
+                    }
+                });
+                
+                // Navigation menu hover
+                this.dropdownMenu.addEventListener('mouseenter', () => {
+                    clearTimeout(this.hideTimeout);
+                });
+                
+                this.dropdownMenu.addEventListener('mouseleave', (e) => {
+                    if (!this.searchContainer.contains(e.relatedTarget)) {
+                        this.hideTimeout = setTimeout(() => {
+                            this.hideNavigationMenu();
+                        }, 150);
+                    }
+                });
+                
+                // Global click handler
+                document.addEventListener('click', (e) => {
+                    if (!this.searchContainer.contains(e.target) && 
+                        !this.searchSuggestions.contains(e.target)) {
+                        this.disableSearchMode();
+                    }
+                });
+            }
+            
+            enableSearchMode() {
+                this.isSearchMode = true;
+                this.searchDisplay.classList.add('hidden');
+                this.searchInputContainer.classList.remove('hidden');
+                this.searchInput.focus();
+                this.hideNavigationMenu();
+            }
+            
+            disableSearchMode() {
+                this.isSearchMode = false;
+                this.searchInputContainer.classList.add('hidden');
+                this.searchDisplay.classList.remove('hidden');
+                this.hideSuggestions();
+                this.selectedIndex = -1;
+            }
+            
+            clearSearchInput() {
+                this.searchInput.value = '';
+                this.hideSuggestions();
+                this.searchInput.focus();
+            }
+            
+            handleSearch(query) {
+                if (!query.trim()) {
+                    this.hideSuggestions();
+                    return;
+                }
+                
+                const suggestions = this.findSuggestions(query);
+                this.displaySuggestions(suggestions, query);
+            }
+            
+            findSuggestions(query) {
+                const searchTerm = query.toLowerCase().trim();
+                
+                return bikeDatabase.filter(bike => {
+                    // Check if query matches bike name, brand, or keywords
+                    const nameMatch = bike.name.toLowerCase().includes(searchTerm);
+                    const brandMatch = bike.brand.toLowerCase().includes(searchTerm);
+                    const keywordMatch = bike.keywords.some(keyword => 
+                        keyword.toLowerCase().includes(searchTerm)
+                    );
+                    
+                    return nameMatch || brandMatch || keywordMatch;
+                }).sort((a, b) => {
+                    // Prioritize exact matches and brand matches
+                    const aNameMatch = a.name.toLowerCase().startsWith(searchTerm);
+                    const bNameMatch = b.name.toLowerCase().startsWith(searchTerm);
+                    
+                    if (aNameMatch && !bNameMatch) return -1;
+                    if (!aNameMatch && bNameMatch) return 1;
+                    
+                    return a.name.localeCompare(b.name);
+                });
+            }
+            
+            displaySuggestions(suggestions, query) {
+                this.currentSuggestions = suggestions;
+                this.selectedIndex = -1;
+                
+                if (suggestions.length === 0) {
+                    this.searchSuggestions.innerHTML = `
+                        <div class="px-4 py-3 text-gray-400 text-center">
+                            <div class="flex items-center justify-center mb-2">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.220 0-4.248.956-5.657 2.515l-.34.345.34-.345z"></path>
+                                </svg>
+                            </div>
+                            <p>No motorcycles found for "${query}"</p>
+                            <p class="text-sm mt-1">Try searching for brands like KTM, Royal Enfield, or Harley Davidson</p>
+                        </div>
+                    `;
+                } else {
+                    this.searchSuggestions.innerHTML = suggestions.map((bike, index) => `
+                        <div class="suggestion-item px-4 py-3 cursor-pointer rounded-lg" data-index="${index}" data-file="${bike.file}">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="font-semibold text-gray-200">
+                                        ${this.highlightMatch(bike.name, query)}
+                                    </div>
+                                    <div class="bike-brand text-gray-400">${bike.brand}</div>
+                                </div>
+                                <div class="text-gray-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    // Add click listeners to suggestions
+                    this.searchSuggestions.querySelectorAll('.suggestion-item').forEach(item => {
+                        item.addEventListener('click', () => {
+                            const file = item.getAttribute('data-file');
+                            this.navigateToPage(file);
+                        });
+                    });
+                }
+                
+                this.showSuggestions();
+            }
+            
+            highlightMatch(text, query) {
+                const regex = new RegExp(`(${query})`, 'gi');
+                return text.replace(regex, '<span class="suggestion-highlight">$1</span>');
+            }
+            
+            showSuggestions() {
+                this.searchSuggestions.classList.remove('hidden');
+            }
+            
+            hideSuggestions() {
+                this.searchSuggestions.classList.add('hidden');
+            }
+            
+            showNavigationMenu() {
+                this.dropdownMenu.classList.remove('hidden');
+            }
+            
+            hideNavigationMenu() {
+                this.dropdownMenu.classList.add('hidden');
+            }
+            
+            handleKeyDown(e) {
+                switch(e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        this.navigateDown();
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        this.navigateUp();
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        this.selectCurrent();
+                        break;
+                    case 'Escape':
+                        this.disableSearchMode();
+                        break;
+                }
+            }
+            
+            navigateDown() {
+                if (this.currentSuggestions.length > 0) {
+                    this.selectedIndex = Math.min(this.selectedIndex + 1, this.currentSuggestions.length - 1);
+                    this.updateSelection();
+                }
+            }
+            
+            navigateUp() {
+                if (this.currentSuggestions.length > 0) {
+                    this.selectedIndex = Math.max(this.selectedIndex - 1, -1);
+                    this.updateSelection();
+                }
+            }
+            
+            updateSelection() {
+                const items = this.searchSuggestions.querySelectorAll('.suggestion-item');
+                items.forEach((item, index) => {
+                    if (index === this.selectedIndex) {
+                        item.style.background = 'rgba(255, 255, 255, 0.1)';
+                        item.style.borderLeftColor = '#667eea';
+                        item.style.transform = 'translateX(5px)';
+                    } else {
+                        item.style.background = '';
+                        item.style.borderLeftColor = 'transparent';
+                        item.style.transform = '';
+                    }
+                });
+            }
+            
+            selectCurrent() {
+                if (this.selectedIndex >= 0 && this.selectedIndex < this.currentSuggestions.length) {
+                    const selectedBike = this.currentSuggestions[this.selectedIndex];
+                    this.navigateToPage(selectedBike.file);
+                } else if (this.searchInput.value.trim()) {
+                    // If no suggestion selected but there's text, search for the first match
+                    const suggestions = this.findSuggestions(this.searchInput.value);
+                    if (suggestions.length > 0) {
+                        this.navigateToPage(suggestions[0].file);
+                    }
+                }
+            }
+            
+            navigateToPage(file) {
+                // Add a small delay for better UX
+                setTimeout(() => {
+                    window.location.href = file;
+                }, 150);
+            }
+        }
+
         // Cursor Follow Effect Function
         function addCursorFollowEffect(element) {
             let centerX, centerY;
@@ -540,12 +964,20 @@
             addCursorFollowEffect(filterButton);
             addCursorFollowEffect(developerButton);
 
+            // Initialize search functionality
+            new BikeSearch();
+
             // Initialize captcha
             const captcha = initCaptcha();
 
             // Meet The Developer Button Functionality
             developerButton.addEventListener('click', () => {
                 captcha.showCaptcha();
+            });
+            
+            // Filter Button Functionality
+            filterButton.addEventListener('click', () => {
+                window.location.href = 'brands.html';
             });
         });
         
@@ -599,119 +1031,23 @@
             isLogoDropdownOpen = false;
         }
         
-        // Search Container Functionality
-        const searchContainer = document.getElementById('searchContainer');
-        const searchDisplay = document.getElementById('searchDisplay');
-        const searchInput = document.getElementById('searchInput');
-        const dropdownMenu = document.getElementById('dropdownMenu');
-        let isSearchMode = false;
-        let isDropdownOpen = false;
-        
-        searchContainer.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (!isSearchMode) {
-                searchDisplay.classList.add('hidden');
-                searchInput.classList.remove('hidden');
-                searchInput.focus();
-                isSearchMode = true;
-                
-                if (isDropdownOpen) {
-                    dropdownMenu.classList.add('hidden');
-                    isDropdownOpen = false;
-                }
-            }
-        });
-        
-        searchContainer.addEventListener('mouseenter', () => {
-            if (!isSearchMode) {
-                dropdownMenu.classList.remove('hidden');
-                isDropdownOpen = true;
-            }
-        });
-        
-        let hoverTimeout;
-        
-        function hideDropdownWithDelay() {
-            hoverTimeout = setTimeout(() => {
-                if (!isSearchMode) {
-                    dropdownMenu.classList.add('hidden');
-                    isDropdownOpen = false;
-                }
-            }, 150);
-        }
-        
-        function clearHideTimeout() {
-            if (hoverTimeout) {
-                clearTimeout(hoverTimeout);
-                hoverTimeout = null;
-            }
-        }
-        
-        searchContainer.addEventListener('mouseleave', (e) => {
-            if (!dropdownMenu.contains(e.relatedTarget) && !isSearchMode) {
-                hideDropdownWithDelay();
-            }
-        });
-        
-        dropdownMenu.addEventListener('mouseenter', () => {
-            clearHideTimeout();
-        });
-        
-        dropdownMenu.addEventListener('mouseleave', (e) => {
-            if (!searchContainer.contains(e.relatedTarget)) {
-                hideDropdownWithDelay();
-            }
-        });
-        
+        // Global click handler for logo dropdown
         document.addEventListener('click', (e) => {
             if (!logoContainer.contains(e.target) && !logoDropdown.contains(e.target)) {
                 hideLogoDropdown();
             }
-            
-            if (!searchContainer.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                if (isSearchMode) {
-                    searchInput.classList.add('hidden');
-                    searchDisplay.classList.remove('hidden');
-                    isSearchMode = false;
-                }
-                if (isDropdownOpen) {
-                    dropdownMenu.classList.add('hidden');
-                    isDropdownOpen = false;
-                }
-            }
-        });
-        
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                const searchTerm = searchInput.value.trim();
-                if (searchTerm) {
-                    console.log('Searching for:', searchTerm);
-                    alert(`Searching for: ${searchTerm}`);
-                }
-            }
-        });
-        
-        searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                searchInput.classList.add('hidden');
-                searchDisplay.classList.remove('hidden');
-                isSearchMode = false;
-                searchInput.value = '';
-            }
-        });
-        
-        // Filter Button Functionality
-        const filterButton = document.getElementById('filterButton');
-        filterButton.addEventListener('click', () => {
-            window.location.href = 'brands.html';
         });
         
         // Prevent dropdowns from closing when clicking inside them
-        dropdownMenu.addEventListener('click', (e) => {
+        document.getElementById('dropdownMenu').addEventListener('click', (e) => {
             e.stopPropagation();
         });
         
         logoDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+        
+        document.getElementById('searchSuggestions').addEventListener('click', (e) => {
             e.stopPropagation();
         });
     </script>
