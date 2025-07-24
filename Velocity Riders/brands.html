@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VelocityRiders - Available Brands</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        .brands-background {
+            font-family: 'Inter', sans-serif;
+            position: relative;
+        }
+        
+        /* Grid Background for Dark Mode - More Visible */
+        .dark .brands-background::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0a0a0a;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+        }
+        
+        /* Grid Background for Light Mode */
+        .brands-background::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f8f9fa;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+        }
+        
+        /* Overlay for better content visibility */
+        .dark .brands-background::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(10, 10, 10, 0.3) 100%);
+            z-index: -1;
+        }
+        
+        .brands-background::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(248, 249, 250, 0.3) 100%);
+            z-index: -1;
+        }
+        
+        .logo-container {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .logo-container:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5));
+        }
+        
+        .theme-toggle-mini {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .dark .theme-toggle-mini {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .theme-toggle-mini:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .clock-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .dark .clock-container {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .page-title {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .brand-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .dark .brand-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .brand-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        
+        .dark .brand-card:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .brand-header {
+            cursor: pointer;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .dark .brand-header {
+            color: #fff;
+        }
+        
+        .brand-models {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+        
+        .brand-models.open {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+            max-height: 300px;
+        }
+        
+        .brand-icon {
+            transition: transform 0.3s ease;
+            font-size: 20px;
+            color: #667eea;
+        }
+        
+        .brand-icon.rotate {
+            transform: rotate(45deg);
+        }
+        
+        .model-card {
+            width: 160px;
+            height: 160px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .dark .model-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .model-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+        
+        .model-card img {
+            width: 100%;
+            height: 70%;
+            object-fit: cover;
+        }
+        
+        .model-name {
+            height: 30%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            color: #333;
+            text-align: center;
+            padding: 0.25rem;
+        }
+        
+        .dark .model-name {
+            color: #eee;
+        }
+        
+        /* Additional styling for better content visibility on grid */
+        main {
+            position: relative;
+            z-index: 1;
+        }
+        
+        header {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen brands-background transition-colors duration-500">
+    
+    <!-- Header -->
+    <header class="w-full p-6">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            
+            <!-- Logo - Top Left -->
+            <div class="flex items-center">
+                <div id="logoContainer" class="logo-container">
+                    <img src="logo.jpeg" alt="VelocityRiders Logo" class="w-16 h-16 object-contain rounded-lg">
+                </div>
+            </div>
+            
+            <!-- IST Clock - Center Top -->
+            <div class="flex items-center">
+                <div class="clock-container rounded-2xl px-6 py-3 shadow-lg">
+                    <div class="text-center">
+                        <div id="istTime" class="text-lg font-bold text-gray-800 dark:text-white"></div>
+                        <div class="text-xs text-gray-600 dark:text-gray-300 font-medium tracking-wider">IST</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Theme Toggle - Top Right -->
+            <div class="flex items-center">
+                <button id="themeToggle" class="theme-toggle-mini flex items-center justify-center shadow-lg">
+                    <span id="themeIcon" class="text-2xl">☀️</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-6 py-8">
+        
+        <!-- Page Title -->
+        <div class="text-center mb-12">
+            <h1 class="page-title text-4xl md:text-5xl font-black tracking-wide">
+                AVAILABLE BRANDS
+            </h1>
+        </div>
+
+        <!-- Brand Cards -->
+        <div class="space-y-6">
+            
+            <!-- TVS Brand -->
+            <div class="brand-card rounded-2xl overflow-hidden">
+                <div class="brand-header" onclick="toggleBrand(0)">
+                    <div class="flex items-center space-x-4">
+                        <img src="Brand_logo/tvs.jpeg" alt="TVS" class="w-14 h-14 rounded-lg object-contain">
+                        <span class="text-2xl font-bold">TVS</span>
+                    </div>
+                    <span class="brand-icon" id="icon-0">+</span>
+                </div>
+                <div class="brand-models" id="models-0">
+                    <div class="flex flex-wrap gap-6">
+                        <a href="Bikes/ApacheRTR160.html" class="model-card">
+                            <img src="Bikes/Bike_Images/ApacheRTR160.jpeg" alt="Apache RTR 160">
+                            <div class="model-name">Apache RTR 160</div>
+                        </a>
+                        <a href="Bikes/ApacheRR310.html" class="model-card">
+                            <img src="Bikes/Bike_Images/ApacheRR310.jpeg" alt="Apache RR 310">
+                            <div class="model-name">Apache RR 310</div>
+                        </a>
+                        <a href="Bikes/Ntorq125.html" class="model-card">
+                            <img src="Bikes/Bike_Images/Ntorq125.jpeg" alt="Ntorq 125">
+                            <div class="model-name">Ntorq 125</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Royal Enfield Brand -->
+            <div class="brand-card rounded-2xl overflow-hidden">
+                <div class="brand-header" onclick="toggleBrand(1)">
+                    <div class="flex items-center space-x-4">
+                        <img src="Brand_logo/royalenfield.jpeg" alt="Royal Enfield" class="w-14 h-14 rounded-lg object-contain">
+                        <span class="text-2xl font-bold">Royal Enfield</span>
+                    </div>
+                    <span class="brand-icon" id="icon-1">+</span>
+                </div>
+                <div class="brand-models" id="models-1">
+                    <div class="flex flex-wrap gap-6">
+                        <a href="Bikes/Classic350.html" class="model-card">
+                            <img src="Bikes/Bike_Images/Classic350.jpeg" alt="Classic 350">
+                            <div class="model-name">Classic 350</div>
+                        </a>
+                        <a href="Bikes/Himalayan.html" class="model-card">
+                            <img src="Bikes/Bike_Images/Himalayan.jpeg" alt="Himalayan">
+                            <div class="model-name">Himalayan</div>
+                        </a>
+                        <a href="Bikes/Interceptor650.html" class="model-card">
+                            <img src="Bikes/Bike_Images/Interceptor650.jpeg" alt="Interceptor 650">
+                            <div class="model-name">Interceptor 650</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Harley Davidson Brand -->
+            <div class="brand-card rounded-2xl overflow-hidden">
+                <div class="brand-header" onclick="toggleBrand(2)">
+                    <div class="flex items-center space-x-4">
+                        <img src="Brand_logo/harleydavidson.jpeg" alt="Harley Davidson" class="w-14 h-14 rounded-lg object-contain">
+                        <span class="text-2xl font-bold">Harley Davidson</span>
+                    </div>
+                    <span class="brand-icon" id="icon-2">+</span>
+                </div>
+                <div class="brand-models" id="models-2">
+                    <div class="flex flex-wrap gap-6">
+                        <a href="Bikes/Street750.html" class="model-card">
+                            <img src="Bikes/Bike_Images/Street750.jpeg" alt="Street 750">
+                            <div class="model-name">Street 750</div>
+                        </a>
+                        <a href="Bikes/Iron883.html" class="model-card">
+                            <img src="Bikes/Bike_Images/Iron883.jpeg" alt="Iron 883">
+                            <div class="model-name">Iron 883</div>
+                        </a>
+                        <a href="Bikes/FatBoy.html" class="model-card">
+                            <img src="Bikes/Bike_Images/FatBoy.jpeg" alt="Fat Boy">
+                            <div class="model-name">Fat Boy</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KTM Brand -->
+            <div class="brand-card rounded-2xl overflow-hidden">
+                <div class="brand-header" onclick="toggleBrand(3)">
+                    <div class="flex items-center space-x-4">
+                        <img src="Brand_logo/ktm.jpeg" alt="KTM" class="w-14 h-14 rounded-lg object-contain">
+                        <span class="text-2xl font-bold">KTM</span>
+                    </div>
+                    <span class="brand-icon" id="icon-3">+</span>
+                </div>
+                <div class="brand-models" id="models-3">
+                    <div class="flex flex-wrap gap-6">
+                        <a href="Bikes/Duke390.html" class="model-card">
+                            <img src="Bikes/Bike_Images/Duke390.jpeg" alt="Duke 390">
+                            <div class="model-name">Duke 390</div>
+                        </a>
+                        <a href="Bikes/RC390.html" class="model-card">
+                            <img src="Bikes/Bike_Images/RC390.jpeg" alt="RC 390">
+                            <div class="model-name">RC 390</div>
+                        </a>
+                        <a href="Bikes/Adventure390.html" class="model-card">
+                            <img src="Bikes/Bike_Images/Adventure390.jpeg" alt="Adventure 390">
+                            <div class="model-name">Adventure 390</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // IST Clock Functionality
+        function updateISTTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('istTime').textContent = timeString;
+        }
+        
+        setInterval(updateISTTime, 1000);
+        updateISTTime();
+
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+        
+        // Check for saved theme or default to dark mode
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            html.classList.remove('dark');
+            themeIcon.textContent = '🌙';
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        // Logo click - go back to homepage
+        document.getElementById('logoContainer').addEventListener('click', () => {
+            window.location.href = 'hero.html';
+        });
+
+        // Brand Toggle Functionality
+        function toggleBrand(index) {
+            const models = document.getElementById(`models-${index}`);
+            const icon = document.getElementById(`icon-${index}`);
+            
+            if (models.classList.contains('open')) {
+                models.classList.remove('open');
+                icon.classList.remove('rotate');
+                icon.textContent = '+';
+            } else {
+                // Close all other brands
+                for (let i = 0; i < 4; i++) {
+                    if (i !== index) {
+                        const otherModels = document.getElementById(`models-${i}`);
+                        const otherIcon = document.getElementById(`icon-${i}`);
+                        otherModels.classList.remove('open');
+                        otherIcon.classList.remove('rotate');
+                        otherIcon.textContent = '+';
+                    }
+                }
+                
+                // Open clicked brand
+                models.classList.add('open');
+                icon.classList.add('rotate');
+                icon.textContent = '×';
+            }
+        }
+    </script>
+</body>
+</html>

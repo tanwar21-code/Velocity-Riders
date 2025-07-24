@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VelocityRiders - Help & Support</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;700;900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        .help-background {
+            font-family: 'Inter', sans-serif;
+            position: relative;
+        }
+        
+        /* Grid Background for Dark Mode */
+        .dark .help-background::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0f0f0f;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+        }
+        
+        /* Grid Background for Light Mode */
+        .help-background::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f8f9fa;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+        }
+        
+        /* Overlay for better content visibility */
+        .dark .help-background::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(15, 15, 15, 0.3) 100%);
+            z-index: -1;
+        }
+        
+        .help-background::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(248, 249, 250, 0.3) 100%);
+            z-index: -1;
+        }
+        
+        .logo-container {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .logo-container:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5));
+        }
+        
+        .theme-toggle-mini {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .dark .theme-toggle-mini {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .theme-toggle-mini:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .clock-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .dark .clock-container {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .faq-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .dark .faq-item {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .faq-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        
+        .dark .faq-item:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .faq-question {
+            cursor: pointer;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .dark .faq-question {
+            color: #fff;
+        }
+        
+        .faq-answer {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            color: #666;
+        }
+        
+        .dark .faq-answer {
+            color: #ccc;
+        }
+        
+        .faq-answer.open {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+            max-height: 200px;
+        }
+        
+        .faq-icon {
+            transition: transform 0.3s ease;
+            font-size: 20px;
+            color: #667eea;
+        }
+        
+        .faq-icon.rotate {
+            transform: rotate(45deg);
+        }
+        
+        .contact-form {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+        }
+        
+        .dark .contact-form {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .form-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            color: #333;
+        }
+        
+        .dark .form-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-input::placeholder {
+            color: #999;
+        }
+        
+        .dark .form-input::placeholder {
+            color: #666;
+        }
+        
+        .submit-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .page-title {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Notice Styling */
+        .notice-banner {
+            font-family: 'IBM Plex Mono', monospace;
+            background: rgba(220, 38, 127, 0.1);
+            border: 2px solid rgba(220, 38, 127, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dark .notice-banner {
+            background: rgba(220, 38, 127, 0.15);
+            border: 2px solid rgba(220, 38, 127, 0.4);
+        }
+        
+        .notice-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(220, 38, 127, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .notice-title {
+            font-family: 'IBM Plex Mono', monospace;
+            color: #dc2770;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(220, 38, 127, 0.3);
+        }
+        
+        .dark .notice-title {
+            color: #ff6b9d;
+            text-shadow: 0 0 15px rgba(255, 107, 157, 0.4);
+        }
+        
+        .notice-text {
+            font-family: 'IBM Plex Mono', monospace;
+            color: #666;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        
+        .dark .notice-text {
+            color: #ccc;
+        }
+        
+        .warning-icon {
+            color: #dc2770;
+            filter: drop-shadow(0 0 8px rgba(220, 38, 127, 0.4));
+            animation: pulse 2s infinite;
+        }
+        
+        .dark .warning-icon {
+            color: #ff6b9d;
+            filter: drop-shadow(0 0 10px rgba(255, 107, 157, 0.5));
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Additional styling for better content visibility on grid */
+        main {
+            position: relative;
+            z-index: 1;
+        }
+        
+        header {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .notice-section {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen help-background transition-colors duration-500">
+    
+    <!-- Header -->
+    <header class="w-full p-6">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            
+            <!-- Logo - Top Left -->
+            <div class="flex items-center">
+                <div id="logoContainer" class="logo-container">
+                    <img src="logo.jpeg" alt="VelocityRiders Logo" class="w-16 h-16 object-contain rounded-lg">
+                </div>
+            </div>
+            
+            <!-- IST Clock - Center Top -->
+            <div class="flex items-center">
+                <div class="clock-container rounded-2xl px-6 py-3 shadow-lg">
+                    <div class="text-center">
+                        <div id="istTime" class="text-lg font-bold text-gray-800 dark:text-white"></div>
+                        <div class="text-xs text-gray-600 dark:text-gray-300 font-medium tracking-wider">IST</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Theme Toggle - Top Right -->
+            <div class="flex items-center">
+                <button id="themeToggle" class="theme-toggle-mini flex items-center justify-center shadow-lg">
+                    <span id="themeIcon" class="text-2xl">☀️</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Important Notice Banner -->
+    <section class="notice-section w-full px-6 py-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="notice-banner rounded-2xl p-6 text-center shadow-2xl">
+                <div class="flex items-center justify-center mb-3">
+                    <span class="warning-icon text-2xl mr-2">⚠️</span>
+                    <h3 class="notice-title text-lg font-bold tracking-wide">IMPORTANT NOTICE</h3>
+                    <span class="warning-icon text-2xl ml-2">⚠️</span>
+                </div>
+                
+                <div class="notice-text text-xs leading-relaxed max-w-3xl mx-auto">
+                    <p class="mb-3">
+                        <strong>Please be advised:</strong> VelocityRiders operates as an <strong>information directory platform</strong> connecting riders with registered motorcycle dealers across India.
+                    </p>
+                    
+                    <p class="mb-3 text-xs">
+                        • <strong>Direct Rental:</strong> Rentals are not processed through our platform<br>
+                        • <strong>Dealer Contact:</strong> All arrangements must be made directly with dealers<br>
+                        • <strong>Liability:</strong> VelocityRiders is not responsible for transactions or disputes
+                    </p>
+                    
+                    <p class="text-xs opacity-75 italic">
+                        We recommend verifying dealer credentials and reviewing rental terms before proceeding.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-6 py-8">
+        
+        <!-- Page Title -->
+        <div class="text-center mb-12">
+            <h1 class="page-title text-4xl md:text-5xl font-black tracking-wide mb-4">
+                HELP & SUPPORT
+            </h1>
+            <p class="text-gray-600 dark:text-gray-300 text-lg font-light max-w-2xl mx-auto">
+                Find answers to common questions or get in touch with our support team
+            </p>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-container mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-8 text-center">
+                Frequently Asked Questions
+            </h2>
+            
+            <div class="space-y-4">
+                <!-- FAQ Item 1 -->
+                <div class="faq-item rounded-2xl overflow-hidden">
+                    <div class="faq-question" onclick="toggleFaq(0)">
+                        <span>How do I rent a motorcycle through VelocityRiders?</span>
+                        <span class="faq-icon" id="icon-0">+</span>
+                    </div>
+                    <div class="faq-answer" id="answer-0">
+                        <p>To rent a motorcycle, simply use our filter system to select your city, preferred brand, and model. Browse through available options, compare prices, and book directly with verified dealers. You'll need a valid driving license and identity proof for the rental process.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 2 -->
+                <div class="faq-item rounded-2xl overflow-hidden">
+                    <div class="faq-question" onclick="toggleFaq(1)">
+                        <span>What documents do I need to rent a motorcycle?</span>
+                        <span class="faq-icon" id="icon-1">+</span>
+                    </div>
+                    <div class="faq-answer" id="answer-1">
+                        <p>You'll need a valid driving license (with two-wheeler endorsement), government-issued photo ID (Aadhar, PAN, or Passport), and a security deposit. Some dealers may also require proof of address and a credit/debit card for security purposes.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 3 -->
+                <div class="faq-item rounded-2xl overflow-hidden">
+                    <div class="faq-question" onclick="toggleFaq(2)">
+                        <span>Are the motorcycles insured?</span>
+                        <span class="faq-icon" id="icon-2">+</span>
+                    </div>
+                    <div class="faq-answer" id="answer-2">
+                        <p>Yes, all motorcycles listed on VelocityRiders come with comprehensive insurance coverage. However, you may be liable for any damage beyond normal wear and tear. We recommend checking the specific insurance terms with each dealer before booking.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 4 -->
+                <div class="faq-item rounded-2xl overflow-hidden">
+                    <div class="faq-question" onclick="toggleFaq(3)">
+                        <span>Can I cancel or modify my booking?</span>
+                        <span class="faq-icon" id="icon-3">+</span>
+                    </div>
+                    <div class="faq-answer" id="answer-3">
+                        <p>Cancellation and modification policies vary by dealer. Most allow free cancellation up to 24 hours before the rental start time. For modifications, contact the dealer directly through our platform or call our support team for assistance.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 5 -->
+                <div class="faq-item rounded-2xl overflow-hidden">
+                    <div class="faq-question" onclick="toggleFaq(4)">
+                        <span>What if I face issues during my rental period?</span>
+                        <span class="faq-icon" id="icon-4">+</span>
+                    </div>
+                    <div class="faq-answer" id="answer-4">
+                        <p>In case of breakdowns or accidents, immediately contact the dealer and our 24/7 support helpline. Most dealers provide roadside assistance. Never attempt major repairs yourself, as it may void the insurance coverage.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 6 -->
+                <div class="faq-item rounded-2xl overflow-hidden">
+                    <div class="faq-question" onclick="toggleFaq(5)">
+                        <span>How are rental prices determined?</span>
+                        <span class="faq-icon" id="icon-5">+</span>
+                    </div>
+                    <div class="faq-answer" id="answer-5">
+                        <p>Rental prices depend on factors like motorcycle model, rental duration, location, season, and demand. Premium bikes and peak seasons typically cost more. All prices are set by individual dealers and displayed transparently on our platform.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="contact-form rounded-3xl p-8 shadow-xl max-w-2xl mx-auto">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">
+                Still Need Help?
+            </h2>
+            <p class="text-gray-600 dark:text-gray-300 text-center mb-8">
+                Can't find what you're looking for? Send us a message and we'll get back to you as soon as possible.
+            </p>
+            
+            <form id="contactForm">
+                <div class="mb-6">
+                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Your Email Address
+                    </label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        required
+                        class="form-input w-full px-4 py-3 rounded-xl"
+                        placeholder="Enter your email address"
+                    >
+                </div>
+                
+                <div class="mb-6">
+                    <label for="subject" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Subject
+                    </label>
+                    <input 
+                        type="text" 
+                        id="subject" 
+                        name="subject" 
+                        required
+                        class="form-input w-full px-4 py-3 rounded-xl"
+                        placeholder="Brief description of your inquiry"
+                    >
+                </div>
+                
+                <div class="mb-8">
+                    <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Your Message
+                    </label>
+                    <textarea 
+                        id="message" 
+                        name="message" 
+                        rows="5" 
+                        required
+                        class="form-input w-full px-4 py-3 rounded-xl resize-none"
+                        placeholder="Tell us more about how we can help you..."
+                    ></textarea>
+                </div>
+                
+                <div class="text-center">
+                    <button 
+                        type="submit" 
+                        class="submit-button px-8 py-4 text-white font-bold text-lg rounded-xl tracking-wide shadow-lg"
+                    >
+                        SEND MESSAGE
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // IST Clock Functionality
+        function updateISTTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('istTime').textContent = timeString;
+        }
+        
+        setInterval(updateISTTime, 1000);
+        updateISTTime();
+
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+        
+        // Check for saved theme or default to dark mode
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            html.classList.remove('dark');
+            themeIcon.textContent = '🌙';
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        // Logo click - go back to homepage
+        document.getElementById('logoContainer').addEventListener('click', () => {
+            window.location.href = 'hero.html';
+        });
+
+        // FAQ Toggle Functionality
+        function toggleFaq(index) {
+            const answer = document.getElementById(`answer-${index}`);
+            const icon = document.getElementById(`icon-${index}`);
+            
+            if (answer.classList.contains('open')) {
+                answer.classList.remove('open');
+                icon.classList.remove('rotate');
+                icon.textContent = '+';
+            } else {
+                // Close all other FAQs
+                for (let i = 0; i < 6; i++) {
+                    if (i !== index) {
+                        const otherAnswer = document.getElementById(`answer-${i}`);
+                        const otherIcon = document.getElementById(`icon-${i}`);
+                        otherAnswer.classList.remove('open');
+                        otherIcon.classList.remove('rotate');
+                        otherIcon.textContent = '+';
+                    }
+                }
+                
+                // Open clicked FAQ
+                answer.classList.add('open');
+                icon.classList.add('rotate');
+                icon.textContent = '×';
+            }
+        }
+
+        // Contact Form Functionality
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value;
+            
+            if (email && subject && message) {
+                // Simulate form submission
+                const submitButton = this.querySelector('button[type="submit"]');
+                const originalText = submitButton.textContent;
+                
+                submitButton.textContent = 'SENDING...';
+                submitButton.disabled = true;
+                
+                setTimeout(() => {
+                    alert('Thank you for your message! We\'ll get back to you within 24 hours.');
+                    this.reset();
+                    submitButton.textContent = originalText;
+                    submitButton.disabled = false;
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>

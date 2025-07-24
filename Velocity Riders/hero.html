@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VelocityRiders - Header</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        .hero-background {
+            background-image: url('HeroBackground.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        
+        .glassmorphism {
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo-silver {
+            border: 3px solid #C0C0C0;
+            box-shadow: 0 0 15px rgba(192, 192, 192, 0.5),
+                       inset 0 0 10px rgba(192, 192, 192, 0.2);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .logo-silver:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(192, 192, 192, 0.7),
+                       inset 0 0 15px rgba(192, 192, 192, 0.3);
+        }
+        
+        /* Cursor Follow Effect */
+        .cursor-follow {
+            transition: transform 0.2s ease-out;
+        }
+        
+        .search-container {
+            transition: all 0.3s ease;
+        }
+        
+        .search-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .dropdown-enter {
+            animation: dropdownSlide 0.3s ease-out;
+        }
+        
+        @keyframes dropdownSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .filter-button, .developer-button {
+            font-family: 'Orbitron', monospace;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .filter-button:hover, .developer-button:hover {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .filter-arrow {
+            transition: transform 0.3s ease;
+        }
+        
+        .filter-button:hover .filter-arrow {
+            transform: translateX(4px);
+        }
+        
+        .developer-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        .developer-button:hover .developer-icon {
+            transform: scale(1.1);
+        }
+        
+        .logo-dropdown {
+            font-family: 'Poppins', sans-serif;
+            min-width: 350px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        
+        .logo-dropdown-title {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Captcha Modal Styles */
+        .captcha-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            backdrop-filter: blur(5px);
+        }
+
+        .captcha-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .captcha-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-width: 350px;
+            width: 90%;
+            font-family: Arial, sans-serif;
+        }
+
+        .captcha-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .captcha-logo {
+            font-size: 14px;
+            color: #757575;
+            font-weight: 500;
+        }
+
+        .captcha-checkbox-container {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border: 1px solid #d3d3d3;
+            border-radius: 3px;
+            background: #fafafa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .captcha-checkbox-container:hover {
+            background: #f0f0f0;
+        }
+
+        .captcha-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #d3d3d3;
+            border-radius: 3px;
+            margin-right: 15px;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .captcha-checkbox.loading {
+            border-color: #4285f4;
+        }
+
+        .captcha-checkbox.checked {
+            background: #34a853;
+            border-color: #34a853;
+        }
+
+        .captcha-checkbox .checkmark {
+            display: none;
+            position: absolute;
+            top: 2px;
+            left: 7px;
+            width: 8px;
+            height: 14px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .captcha-checkbox.checked .checkmark {
+            display: block;
+        }
+
+        .captcha-text {
+            font-size: 14px;
+            color: #212121;
+            font-weight: 400;
+        }
+
+        .captcha-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .captcha-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .captcha-link {
+            color: #1a73e8;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .captcha-link:hover {
+            text-decoration: underline;
+        }
+
+        .recaptcha-logo {
+            width: 40px;
+            height: 40px;
+            background: #4285f4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #4285f4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Status text animations */
+        .status-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+            min-height: 16px;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen hero-background">
+    
+    <!-- Header -->
+    <header class="w-full p-4 relative">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            
+            <!-- Logo - Top Left with Dropdown -->
+            <div class="flex items-center relative">
+                <div id="logoContainer" class="w-20 h-20 rounded-full logo-silver overflow-hidden bg-gray-800 flex items-center justify-center cursor-follow">
+                    <img src="logo.jpeg" alt="VelocityRiders Logo" class="w-30 h-30 object-contain">
+                </div>
+                
+                <!-- Logo Dropdown Menu -->
+                <div id="logoDropdown" class="absolute top-full left-0 mt-2 logo-dropdown glassmorphism rounded-2xl p-6 hidden dropdown-enter z-50 shadow-2xl">
+                    <h3 class="logo-dropdown-title text-2xl font-bold mb-4 text-center tracking-wide">
+                        Velocity Riders
+                    </h3>
+                    <div class="border-t border-gray-600 pt-4">
+                        <p class="text-gray-200 leading-relaxed text-sm font-light">
+                            Discover the ultimate motorcycle rental experience across India! Our platform connects you with premium bike rental dealerships nationwide, helping you find the perfect ride for your epic journey across every terrain and destination. From mountain highways to coastal roads, from bustling cities to remote villages - embark on unforgettable adventures with confidence and style.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-gray-600">
+                        <p class="text-xs text-gray-400 text-center font-medium">
+                            🏍️ Ride. Explore. Conquer. 🏍️
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search & Navigation - Center -->
+            <div class="relative flex-1 max-w-md mx-8">
+                <div id="searchContainer" class="search-container glassmorphism rounded-full px-6 py-3 cursor-pointer relative">
+                    <!-- Search Display -->
+                    <div id="searchDisplay" class="flex items-center justify-center text-gray-200">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <span class="font-medium">Search</span>
+                    </div>
+                    
+                    <!-- Search Input (Hidden by default) -->
+                    <input 
+                        id="searchInput" 
+                        type="text" 
+                        placeholder="Search motorcycles..." 
+                        class="w-full bg-transparent outline-none text-gray-200 hidden"
+                    >
+                </div>
+                
+                <!-- Search Dropdown Menu -->
+                <div id="dropdownMenu" class="absolute top-full left-0 right-0 mt-1 glassmorphism rounded-2xl p-4 hidden dropdown-enter z-50">
+                    <nav class="space-y-3">
+                        <a href="hero.html" class="block px-4 py-2 rounded-lg text-gray-200 hover:bg-black/20 transition-colors duration-200 font-medium">
+                            🏠 Home
+                        </a>
+                        <a href="filter.html" class="block px-4 py-2 rounded-lg text-gray-200 hover:bg-black/20 transition-colors duration-200 font-medium">
+                            🎛️ Filter
+                        </a>
+                        <a href="brands.html" class="block px-4 py-2 rounded-lg text-gray-200 hover:bg-black/20 transition-colors duration-200 font-medium">
+                            🏍️ Show All Available Brands
+                        </a>
+                        <a href="help.html" class="block px-4 py-2 rounded-lg text-gray-200 hover:bg-black/20 transition-colors duration-200 font-medium">
+                            ❓ Help
+                        </a>
+                    </nav>
+                </div>
+            </div>
+            
+            <!-- IST Clock - Top Right -->
+            <div class="flex items-center">
+                <div class="glassmorphism rounded-2xl px-4 py-3">
+                    <div class="text-center">
+                        <div id="istTime" class="text-lg font-bold text-gray-100"></div>
+                        <div class="text-xs text-gray-300 font-medium">IST</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Filter Button - Bottom Right -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <button id="filterButton" class="filter-button px-6 py-3 rounded-lg text-white font-bold text-lg flex items-center space-x-3 shadow-lg cursor-follow">
+            <span class="tracking-wide">EXPLORE</span>
+            <svg class="filter-arrow w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Meet The Developer Button - Bottom Left -->
+    <div class="fixed bottom-6 left-6 z-50">
+        <button id="developerButton" class="developer-button px-5 py-3 rounded-lg text-white font-bold text-base flex items-center space-x-2 shadow-lg cursor-follow">
+            <span class="developer-icon">👨‍💻</span>
+            <span class="tracking-wide">MEET THE DEVELOPER</span>
+        </button>
+    </div>
+
+    <!-- Captcha Modal -->
+    <div id="captchaModal" class="captcha-modal">
+        <div class="captcha-container">
+            <div class="captcha-header">
+                <div class="captcha-logo">reCAPTCHA</div>
+                <button id="closeCaptcha" class="text-gray-500 hover:text-gray-700 text-xl font-bold">&times;</button>
+            </div>
+            
+            <div id="captchaCheckbox" class="captcha-checkbox-container">
+                <div class="loading-spinner" id="loadingSpinner"></div>
+                <div class="captcha-checkbox" id="checkbox">
+                    <div class="checkmark"></div>
+                </div>
+                <div class="captcha-text">I'm not a robot</div>
+            </div>
+            
+            <div class="status-text" id="statusText"></div>
+            
+            <div class="captcha-footer">
+                <div class="captcha-links">
+                    <a href="#" class="captcha-link">Privacy</a>
+                    <a href="#" class="captcha-link">Terms</a>
+                </div>
+                <div class="recaptcha-logo">re</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cursor Follow Effect Function
+        function addCursorFollowEffect(element) {
+            let centerX, centerY;
+            
+            function updateCenter() {
+                const rect = element.getBoundingClientRect();
+                centerX = rect.left + rect.width / 2;
+                centerY = rect.top + rect.height / 2;
+            }
+            
+            updateCenter();
+            
+            element.addEventListener('mousemove', (e) => {
+                const mouseX = e.clientX;
+                const mouseY = e.clientY;
+                
+                const deltaX = (mouseX - centerX) * 0.15;
+                const deltaY = (mouseY - centerY) * 0.15;
+                
+                element.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1.05)`;
+            });
+            
+            element.addEventListener('mouseleave', () => {
+                element.style.transform = '';
+            });
+            
+            window.addEventListener('resize', updateCenter);
+        }
+
+        // Captcha functionality
+        function initCaptcha() {
+            const captchaModal = document.getElementById('captchaModal');
+            const captchaCheckbox = document.getElementById('captchaCheckbox');
+            const checkbox = document.getElementById('checkbox');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const statusText = document.getElementById('statusText');
+            const closeCaptcha = document.getElementById('closeCaptcha');
+
+            const steps = [
+                'Collecting data...',
+                'Verifying browser...',
+                'Completing process...',
+                'Verified successfully!'
+            ];
+
+            let currentStep = 0;
+
+            function showCaptcha() {
+                captchaModal.classList.add('show');
+            }
+
+            function hideCaptcha() {
+                captchaModal.classList.remove('show');
+                // Reset captcha state
+                checkbox.classList.remove('loading', 'checked');
+                loadingSpinner.style.display = 'none';
+                statusText.textContent = '';
+                currentStep = 0;
+            }
+
+            function processCaptcha() {
+                checkbox.classList.add('loading');
+                loadingSpinner.style.display = 'block';
+                
+                function nextStep() {
+                    if (currentStep < steps.length) {
+                        statusText.textContent = steps[currentStep];
+                        currentStep++;
+                        
+                        if (currentStep < steps.length) {
+                            setTimeout(nextStep, 1000);
+                        } else {
+                            // Final step - verification complete
+                            setTimeout(() => {
+                                checkbox.classList.remove('loading');
+                                checkbox.classList.add('checked');
+                                loadingSpinner.style.display = 'none';
+                                
+                                setTimeout(() => {
+                                    hideCaptcha();
+                                    window.location.href = 'developer.html';
+                                }, 1000);
+                            }, 1000);
+                        }
+                    }
+                }
+                
+                setTimeout(nextStep, 500);
+            }
+
+            captchaCheckbox.addEventListener('click', processCaptcha);
+            closeCaptcha.addEventListener('click', hideCaptcha);
+
+            // Close modal when clicking outside
+            captchaModal.addEventListener('click', (e) => {
+                if (e.target === captchaModal) {
+                    hideCaptcha();
+                }
+            });
+
+            return { showCaptcha, hideCaptcha };
+        }
+
+        // IST Clock Functionality
+        function updateISTTime() {
+            const now = new Date();
+            
+            const timeString = now.toLocaleTimeString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            document.getElementById('istTime').textContent = timeString;
+        }
+        
+        setInterval(updateISTTime, 1000);
+        updateISTTime();
+        
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const logoContainer = document.getElementById('logoContainer');
+            const filterButton = document.getElementById('filterButton');
+            const developerButton = document.getElementById('developerButton');
+            
+            // Add cursor follow effect
+            addCursorFollowEffect(logoContainer);
+            addCursorFollowEffect(filterButton);
+            addCursorFollowEffect(developerButton);
+
+            // Initialize captcha
+            const captcha = initCaptcha();
+
+            // Meet The Developer Button Functionality
+            developerButton.addEventListener('click', () => {
+                captcha.showCaptcha();
+            });
+        });
+        
+        // Logo Dropdown Functionality
+        const logoContainer = document.getElementById('logoContainer');
+        const logoDropdown = document.getElementById('logoDropdown');
+        let isLogoDropdownOpen = false;
+        
+        logoContainer.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleLogoDropdown();
+        });
+        
+        logoContainer.addEventListener('mouseenter', () => {
+            showLogoDropdown();
+        });
+        
+        logoContainer.addEventListener('mouseleave', (e) => {
+            if (!logoDropdown.contains(e.relatedTarget)) {
+                setTimeout(() => {
+                    if (!logoDropdown.matches(':hover')) {
+                        hideLogoDropdown();
+                    }
+                }, 100);
+            }
+        });
+        
+        logoDropdown.addEventListener('mouseleave', () => {
+            setTimeout(() => {
+                if (!logoContainer.matches(':hover')) {
+                    hideLogoDropdown();
+                }
+            }, 100);
+        });
+        
+        function toggleLogoDropdown() {
+            if (isLogoDropdownOpen) {
+                hideLogoDropdown();
+            } else {
+                showLogoDropdown();
+            }
+        }
+        
+        function showLogoDropdown() {
+            logoDropdown.classList.remove('hidden');
+            isLogoDropdownOpen = true;
+        }
+        
+        function hideLogoDropdown() {
+            logoDropdown.classList.add('hidden');
+            isLogoDropdownOpen = false;
+        }
+        
+        // Search Container Functionality
+        const searchContainer = document.getElementById('searchContainer');
+        const searchDisplay = document.getElementById('searchDisplay');
+        const searchInput = document.getElementById('searchInput');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        let isSearchMode = false;
+        let isDropdownOpen = false;
+        
+        searchContainer.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!isSearchMode) {
+                searchDisplay.classList.add('hidden');
+                searchInput.classList.remove('hidden');
+                searchInput.focus();
+                isSearchMode = true;
+                
+                if (isDropdownOpen) {
+                    dropdownMenu.classList.add('hidden');
+                    isDropdownOpen = false;
+                }
+            }
+        });
+        
+        searchContainer.addEventListener('mouseenter', () => {
+            if (!isSearchMode) {
+                dropdownMenu.classList.remove('hidden');
+                isDropdownOpen = true;
+            }
+        });
+        
+        let hoverTimeout;
+        
+        function hideDropdownWithDelay() {
+            hoverTimeout = setTimeout(() => {
+                if (!isSearchMode) {
+                    dropdownMenu.classList.add('hidden');
+                    isDropdownOpen = false;
+                }
+            }, 150);
+        }
+        
+        function clearHideTimeout() {
+            if (hoverTimeout) {
+                clearTimeout(hoverTimeout);
+                hoverTimeout = null;
+            }
+        }
+        
+        searchContainer.addEventListener('mouseleave', (e) => {
+            if (!dropdownMenu.contains(e.relatedTarget) && !isSearchMode) {
+                hideDropdownWithDelay();
+            }
+        });
+        
+        dropdownMenu.addEventListener('mouseenter', () => {
+            clearHideTimeout();
+        });
+        
+        dropdownMenu.addEventListener('mouseleave', (e) => {
+            if (!searchContainer.contains(e.relatedTarget)) {
+                hideDropdownWithDelay();
+            }
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!logoContainer.contains(e.target) && !logoDropdown.contains(e.target)) {
+                hideLogoDropdown();
+            }
+            
+            if (!searchContainer.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                if (isSearchMode) {
+                    searchInput.classList.add('hidden');
+                    searchDisplay.classList.remove('hidden');
+                    isSearchMode = false;
+                }
+                if (isDropdownOpen) {
+                    dropdownMenu.classList.add('hidden');
+                    isDropdownOpen = false;
+                }
+            }
+        });
+        
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const searchTerm = searchInput.value.trim();
+                if (searchTerm) {
+                    console.log('Searching for:', searchTerm);
+                    alert(`Searching for: ${searchTerm}`);
+                }
+            }
+        });
+        
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                searchInput.classList.add('hidden');
+                searchDisplay.classList.remove('hidden');
+                isSearchMode = false;
+                searchInput.value = '';
+            }
+        });
+        
+        // Filter Button Functionality
+        const filterButton = document.getElementById('filterButton');
+        filterButton.addEventListener('click', () => {
+            window.location.href = 'brands.html';
+        });
+        
+        // Prevent dropdowns from closing when clicking inside them
+        dropdownMenu.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+        
+        logoDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    </script>
+</body>
+</html>

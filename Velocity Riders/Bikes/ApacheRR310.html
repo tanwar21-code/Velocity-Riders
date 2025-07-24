@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apache RR 310 - VelocityRiders</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        .model-background {
+            font-family: 'Inter', sans-serif;
+            position: relative;
+        }
+        
+        /* Clean Matt Background for Dark Mode */
+        .dark .model-background {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        }
+        
+        /* Clean Matt Background for Light Mode */
+        .model-background {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+        }
+        
+        .logo-container {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .logo-container:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5));
+        }
+        
+        .theme-toggle-mini {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .dark .theme-toggle-mini {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .theme-toggle-mini:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .clock-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .dark .clock-container {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .bike-image {
+            border-radius: 1rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .bike-image:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+        
+        .specs-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .dark .specs-container {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .city-button {
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .city-button:hover {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: rgba(102, 126, 234, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .dark .modal-content {
+            background: rgba(30, 30, 30, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dealer-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .dark .dealer-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dealer-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .star-rating {
+            color: #fbbf24;
+            font-size: 1.2rem;
+        }
+        
+        .price-highlight {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .contact-info {
+            color: #333;
+        }
+        
+        .dark .contact-info {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body class="min-h-screen model-background transition-colors duration-500">
+    
+    <!-- Header -->
+    <header class="w-full p-6">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            
+            <!-- Logo - Top Left -->
+            <div class="flex items-center">
+                <div id="logoContainer" class="logo-container">
+                    <img src="Bike_Images/logo.jpeg" alt="VelocityRiders Logo" class="w-16 h-16 object-contain rounded-lg">
+                </div>
+            </div>
+            
+            <!-- IST Clock - Center Top -->
+            <div class="flex items-center">
+                <div class="clock-container rounded-2xl px-6 py-3 shadow-lg">
+                    <div class="text-center">
+                        <div id="istTime" class="text-lg font-bold text-gray-800 dark:text-white"></div>
+                        <div class="text-xs text-gray-600 dark:text-gray-300 font-medium tracking-wider">IST</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Theme Toggle - Top Right -->
+            <div class="flex items-center">
+                <button id="themeToggle" class="theme-toggle-mini flex items-center justify-center shadow-lg">
+                    <span id="themeIcon" class="text-2xl">☀️</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-6 py-8">
+        
+        <!-- Bike Model Title -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-black tracking-wide text-gray-800 dark:text-white mb-2">
+                Apache RR 310
+            </h1>
+            <p class="text-lg text-gray-600 dark:text-gray-300">TVS Motor Company</p>
+        </div>
+
+        <!-- Bike Image -->
+        <div class="text-center mb-8">
+            <img src="Bike_Images/ApacheRR310.jpeg" alt="Apache RR 310" class="bike-image mx-auto max-w-full h-auto max-h-96 object-contain">
+        </div>
+
+        <!-- Average Rent Price -->
+        <div class="text-center mb-8">
+            <div class="inline-block bg-gradient-to-r from-red-500 to-pink-600 text-white px-8 py-4 rounded-2xl shadow-lg">
+                <h2 class="text-2xl font-bold">Average Rent Price</h2>
+                <p class="text-3xl font-black">₹4,200 - ₹5,500 / Week</p>
+            </div>
+        </div>
+
+        <!-- Specifications -->
+        <div class="specs-container rounded-3xl p-8 mb-8 shadow-xl">
+            <h2 class="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-white">Specifications</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="text-center p-4">
+                    <div class="text-2xl mb-2">⛽</div>
+                    <h3 class="font-bold text-lg text-gray-800 dark:text-white">Mileage</h3>
+                    <p class="text-gray-600 dark:text-gray-300">35-40 km/l</p>
+                </div>
+                <div class="text-center p-4">
+                    <div class="text-2xl mb-2">🏁</div>
+                    <h3 class="font-bold text-lg text-gray-800 dark:text-white">Top Speed</h3>
+                    <p class="text-gray-600 dark:text-gray-300">160 km/h</p>
+                </div>
+                <div class="text-center p-4">
+                    <div class="text-2xl mb-2">🔧</div>
+                    <h3 class="font-bold text-lg text-gray-800 dark:text-white">Engine</h3>
+                    <p class="text-gray-600 dark:text-gray-300">312.2 cc</p>
+                </div>
+                <div class="text-center p-4">
+                    <div class="text-2xl mb-2">💪</div>
+                    <h3 class="font-bold text-lg text-gray-800 dark:text-white">Torque</h3>
+                    <p class="text-gray-600 dark:text-gray-300">27.3 Nm</p>
+                </div>
+                <div class="text-center p-4">
+                    <div class="text-2xl mb-2">⚖️</div>
+                    <h3 class="font-bold text-lg text-gray-800 dark:text-white">Kerb Weight</h3>
+                    <p class="text-gray-600 dark:text-gray-300">169.5 kg</p>
+                </div>
+                <div class="text-center p-4">
+                    <div class="text-2xl mb-2">🛑</div>
+                    <h3 class="font-bold text-lg text-gray-800 dark:text-white">Brakes Type</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Disc (F&R)</p>
+                </div>
+                <div class="text-center p-4 md:col-span-2 lg:col-span-3">
+                    <div class="text-2xl mb-2">🏍️</div>
+                    <h3 class="font-bold text-lg text-gray-800 dark:text-white">Motorcycle Type</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Sports</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- City Selection -->
+        <div class="text-center">
+            <h2 class="text-3xl font-bold mb-8 text-gray-800 dark:text-white">Choose Your City</h2>
+            <div class="flex flex-wrap justify-center gap-6">
+                <button onclick="openDealerModal('Dehradun')" class="city-button px-8 py-4 rounded-2xl font-bold text-lg text-gray-800 dark:text-white shadow-lg">
+                    📍 Dehradun
+                </button>
+                <button onclick="openDealerModal('Delhi')" class="city-button px-8 py-4 rounded-2xl font-bold text-lg text-gray-800 dark:text-white shadow-lg">
+                    📍 Delhi
+                </button>
+                <button onclick="openDealerModal('Mumbai')" class="city-button px-8 py-4 rounded-2xl font-bold text-lg text-gray-800 dark:text-white shadow-lg">
+                    📍 Mumbai
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Dealer Modal -->
+    <div id="dealerModal" class="modal">
+        <div class="modal-content p-8 w-full max-w-6xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="modalTitle" class="text-3xl font-bold text-gray-800 dark:text-white"></h2>
+                <button onclick="closeDealerModal()" class="text-3xl font-bold text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors">
+                    ×
+                </button>
+            </div>
+            <div id="dealerCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dealer cards will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // IST Clock Functionality
+        function updateISTTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('istTime').textContent = timeString;
+        }
+        
+        setInterval(updateISTTime, 1000);
+        updateISTTime();
+
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+        
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            html.classList.remove('dark');
+            themeIcon.textContent = '🌙';
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        // Logo click - go back to brands page
+        document.getElementById('logoContainer').addEventListener('click', () => {
+            window.location.href = '../hero.html';
+        });
+
+        // Dealer Data for Apache RR 310
+        const dealerData = {
+            'Dehradun': [
+                {
+                    name: 'Supersport Motors',
+                    rating: 4.8,
+                    since: 2010,
+                    price: '₹5,200/week',
+                    phone: '98765-43211',
+                    email: 'supersportmotors@gmail.com'
+                },
+                {
+                    name: 'Racing Edge Rentals',
+                    rating: 4.6,
+                    since: 2015,
+                    price: '₹4,800/week',
+                    phone: '87654-32110',
+                    email: 'racingedge@yahoo.com'
+                },
+                {
+                    name: 'Track Masters',
+                    rating: 4.9,
+                    since: 2012,
+                    price: '₹5,500/week',
+                    phone: '76543-21099',
+                    email: 'trackmasters@hotmail.com'
+                },
+                {
+                    name: 'Speed Demons Hub',
+                    rating: 4.4,
+                    since: 2008,
+                    price: '₹4,600/week',
+                    phone: '65432-10988',
+                    email: 'speeddemons@gmail.com'
+                }
+            ],
+            'Delhi': [
+                {
+                    name: 'Capital Racing Co.',
+                    rating: 4.7,
+                    since: 2005,
+                    price: '₹5,400/week',
+                    phone: '91234-56790',
+                    email: 'capitalracing@gmail.com'
+                },
+                {
+                    name: 'Delhi Superbikes',
+                    rating: 4.5,
+                    since: 2011,
+                    price: '₹5,000/week',
+                    phone: '81234-56790',
+                    email: 'delhisuperbikes@yahoo.in'
+                },
+                {
+                    name: 'Apex Performance',
+                    rating: 4.9,
+                    since: 2009,
+                    price: '₹5,300/week',
+                    phone: '71234-56790',
+                    email: 'apexperformance@hotmail.com'
+                },
+                {
+                    name: 'Metro Track Bikes',
+                    rating: 4.3,
+                    since: 2013,
+                    price: '₹4,200/week',
+                    phone: '61234-56790',
+                    email: 'metrotrack@gmail.com'
+                }
+            ],
+            'Mumbai': [
+                {
+                    name: 'Coastal Superbikes',
+                    rating: 4.8,
+                    since: 2007,
+                    price: '₹5,100/week',
+                    phone: '92345-67891',
+                    email: 'coastalsuperbikes@gmail.com'
+                },
+                {
+                    name: 'Mumbai Racing Hub',
+                    rating: 4.6,
+                    since: 2014,
+                    price: '₹4,900/week',
+                    phone: '82345-67891',
+                    email: 'mumbairacing@yahoo.com'
+                },
+                {
+                    name: 'Bollywood Superbikes',
+                    rating: 4.7,
+                    since: 2010,
+                    price: '₹5,200/week',
+                    phone: '72345-67891',
+                    email: 'bollywoodsuperbikes@hotmail.com'
+                },
+                {
+                    name: 'Marine Speed Co.',
+                    rating: 4.5,
+                    since: 2006,
+                    price: '₹4,700/week',
+                    phone: '62345-67891',
+                    email: 'marinespeed@gmail.com'
+                }
+            ]
+        };
+
+        // Modal Functions
+        function openDealerModal(city) {
+            const modal = document.getElementById('dealerModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const dealerCards = document.getElementById('dealerCards');
+            
+            modalTitle.textContent = `Apache RR 310 Dealers in ${city}`;
+            
+            // Clear previous cards
+            dealerCards.innerHTML = '';
+            
+            // Create dealer cards
+            dealerData[city].forEach(dealer => {
+                const card = createDealerCard(dealer);
+                dealerCards.appendChild(card);
+            });
+            
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDealerModal() {
+            const modal = document.getElementById('dealerModal');
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        function createDealerCard(dealer) {
+            const card = document.createElement('div');
+            card.className = 'dealer-card rounded-2xl p-6 shadow-lg';
+            
+            const stars = '★'.repeat(Math.floor(dealer.rating)) + '☆'.repeat(5 - Math.floor(dealer.rating));
+            
+            card.innerHTML = `
+                <h3 class="text-xl font-bold mb-3 text-gray-800 dark:text-white">${dealer.name}</h3>
+                <div class="star-rating mb-2">${stars} <span class="text-sm text-gray-600 dark:text-gray-300">(${dealer.rating}/5)</span></div>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">📅 Since ${dealer.since}</p>
+                <div class="price-highlight text-2xl font-bold mb-4">${dealer.price}</div>
+                <div class="border-t border-gray-300 dark:border-gray-600 pt-4">
+                    <p class="contact-info text-sm mb-2"><span class="font-bold">📞 Phone:</span> ${dealer.phone}</p>
+                    <p class="contact-info text-sm"><span class="font-bold">📧 Email:</span> ${dealer.email}</p>
+                </div>
+                <button class="w-full mt-4 bg-gradient-to-r from-red-500 to-pink-600 text-white py-2 px-4 rounded-lg font-bold hover:from-red-600 hover:to-pink-700 transition-all duration-300">
+                    Contact Dealer
+                </button>
+            `;
+            
+            return card;
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('dealerModal').addEventListener('click', (e) => {
+            if (e.target.id === 'dealerModal') {
+                closeDealerModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeDealerModal();
+            }
+        });
+    </script>
+</body>
+</html>

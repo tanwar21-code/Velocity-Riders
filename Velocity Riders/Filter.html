@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VelocityRiders - Filter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700;800&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        .filter-background {
+            background-image: url('BackgroundFilter.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .dark .glassmorphism {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo-center {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .logo-center:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+        }
+        
+        .filter-container {
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 400px;
+            max-width: 350px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .filter-option {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+        
+        .filter-option.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .filter-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-family: 'Exo 2', sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-select:focus {
+            border-color: rgba(102, 126, 234, 0.8);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+            outline: none;
+        }
+        
+        .filter-select option {
+            background: #1a1a1a;
+            color: white;
+            padding: 8px;
+        }
+        
+        .search-button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            font-family: 'Orbitron', monospace;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(245, 87, 108, 0.4);
+        }
+        
+        .search-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .search-button:hover::before {
+            left: 100%;
+        }
+        
+        .filter-title {
+            font-family: 'Orbitron', monospace;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8),
+                         0 0 40px rgba(102, 126, 234, 0.6);
+            font-weight: 900;
+        }
+        
+        .back-button {
+            font-family: 'Orbitron', monospace;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .dark .back-button {
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .dark .back-button:hover {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .back-arrow {
+            transition: transform 0.3s ease;
+        }
+        
+        .back-button:hover .back-arrow {
+            transform: translateX(-4px);
+        }
+        
+        .dropdown-enter {
+            animation: slideInUp 0.6s ease-out;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen filter-background transition-colors duration-500">
+    
+    <!-- Header -->
+    <header class="w-full p-4 relative">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            
+            <!-- Empty Left Space -->
+            <div class="w-16"></div>
+            
+            <!-- Logo - Center Top -->
+            <div class="flex items-center">
+                <div id="logoContainer" class="w-20 h-20 rounded-full overflow-hidden bg-white dark:bg-gray-800 flex items-center justify-center logo-center">
+                    <img src="logo.jpeg" alt="VelocityRiders Logo" class="w-30 h-30 object-contain">
+                </div>
+            </div>
+            
+            <!-- IST Clock - Top Right -->
+            <div class="flex items-center">
+                <div class="glassmorphism rounded-2xl px-6 py-4 shadow-xl">
+                    <div class="text-center">
+                        <div id="istTime" class="text-xl font-bold text-white"></div>
+                        <div class="text-sm text-gray-300 font-medium tracking-wider">IST</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Filter Container - Left Side -->
+    <div class="absolute left-8 top-1/2 transform -translate-y-1/2">
+        <div class="filter-container rounded-2xl p-6 shadow-2xl">
+            <h2 class="filter-title text-2xl font-black text-center mb-6 tracking-wide">
+                FIND YOUR RIDE
+            </h2>
+            
+            <!-- Filter Option 1: Choose City -->
+            <div id="cityFilter" class="filter-option show mb-4">
+                <label class="block text-white text-base font-semibold mb-2 tracking-wide">
+                    🏙️ CHOOSE CITY
+                </label>
+                <select id="citySelect" class="filter-select w-full p-3 rounded-xl text-base font-medium">
+                    <option value="">Select your city...</option>
+                    <option value="delhi">Delhi</option>
+                    <option value="dehradun">Dehradun</option>
+                    <option value="mumbai">Mumbai</option>
+                </select>
+            </div>
+            
+            <!-- Filter Option 2: Choose Brand -->
+            <div id="brandFilter" class="filter-option mb-4">
+                <label class="block text-white text-base font-semibold mb-2 tracking-wide">
+                    🏍️ CHOOSE BRAND
+                </label>
+                <select id="brandSelect" class="filter-select w-full p-3 rounded-xl text-base font-medium">
+                    <option value="">Select brand...</option>
+                    <option value="tvs">TVS</option>
+                    <option value="royal-enfield">Royal Enfield</option>
+                    <option value="harley-davidson">Harley Davidson</option>
+                    <option value="ktm">KTM</option>
+                </select>
+            </div>
+            
+            <!-- Filter Option 3: Choose Model -->
+            <div id="modelFilter" class="filter-option mb-4">
+                <label class="block text-white text-base font-semibold mb-2 tracking-wide">
+                    ⚡ CHOOSE MODEL
+                </label>
+                <select id="modelSelect" class="filter-select w-full p-3 rounded-xl text-base font-medium">
+                    <option value="">Select model...</option>
+                </select>
+            </div>
+            
+            <!-- Search Button -->
+            <div id="searchButtonContainer" class="filter-option text-center">
+                <button id="searchButton" class="search-button w-full py-3 rounded-xl text-white font-bold text-base tracking-wider shadow-xl">
+                    🔍 SEARCH BIKES
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button - Bottom Right -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <button id="backButton" class="back-button px-6 py-3 rounded-lg text-white font-bold text-lg flex items-center space-x-3 shadow-lg">
+            <svg class="back-arrow w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            <span class="tracking-wide">BACK</span>
+        </button>
+    </div>
+
+    <script>
+        // IST Clock Functionality
+        function updateISTTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('istTime').textContent = timeString;
+        }
+        
+        setInterval(updateISTTime, 1000);
+        updateISTTime();
+        
+        // Logo click functionality - go back to main page
+        document.getElementById('logoContainer').addEventListener('click', () => {
+            window.location.href = 'hero.html';
+        });
+        
+        // Back button functionality
+        document.getElementById('backButton').addEventListener('click', () => {
+            window.location.href = 'hero.html';
+        });
+        
+        // Filter Logic
+        const citySelect = document.getElementById('citySelect');
+        const brandSelect = document.getElementById('brandSelect');
+        const modelSelect = document.getElementById('modelSelect');
+        const brandFilter = document.getElementById('brandFilter');
+        const modelFilter = document.getElementById('modelFilter');
+        const searchButtonContainer = document.getElementById('searchButtonContainer');
+        const searchButton = document.getElementById('searchButton');
+        
+        // Model data for specific brands (top 3 models each)
+        const modelData = {
+            tvs: ['Apache RTR 160', 'Apache RR 310', 'Ntorq 125'],
+            'royal-enfield': ['Classic 350', 'Himalayan', 'Interceptor 650'],
+            'harley-davidson': ['Street 750', 'Iron 883', 'Fat Boy'],
+            ktm: ['Duke 390', 'RC 390', 'Adventure 390']
+        };
+        
+        // City selection handler
+        citySelect.addEventListener('change', function() {
+            if (this.value) {
+                setTimeout(() => {
+                    brandFilter.classList.add('show');
+                }, 300);
+            } else {
+                brandFilter.classList.remove('show');
+                modelFilter.classList.remove('show');
+                searchButtonContainer.classList.remove('show');
+                brandSelect.value = '';
+                modelSelect.value = '';
+                modelSelect.innerHTML = '<option value="">Select model...</option>';
+            }
+        });
+        
+        // Brand selection handler
+        brandSelect.addEventListener('change', function() {
+            if (this.value) {
+                // Populate models based on selected brand
+                const models = modelData[this.value] || [];
+                modelSelect.innerHTML = '<option value="">Select model...</option>';
+                models.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model.toLowerCase().replace(/\s+/g, '-');
+                    option.textContent = model;
+                    modelSelect.appendChild(option);
+                });
+                
+                setTimeout(() => {
+                    modelFilter.classList.add('show');
+                }, 300);
+            } else {
+                modelFilter.classList.remove('show');
+                searchButtonContainer.classList.remove('show');
+                modelSelect.value = '';
+                modelSelect.innerHTML = '<option value="">Select model...</option>';
+            }
+        });
+        
+        // Model selection handler
+        modelSelect.addEventListener('change', function() {
+            if (this.value) {
+                setTimeout(() => {
+                    searchButtonContainer.classList.add('show');
+                }, 300);
+            } else {
+                searchButtonContainer.classList.remove('show');
+            }
+        });
+        
+        // Search button functionality
+        searchButton.addEventListener('click', function() {
+            const city = citySelect.value;
+            const brand = brandSelect.value;
+            const model = modelSelect.value;
+            
+            if (city && brand && model) {
+                // Add loading state
+                this.innerHTML = '⏳ SEARCHING...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    alert(`Searching for ${modelSelect.options[modelSelect.selectedIndex].text} by ${brandSelect.options[brandSelect.selectedIndex].text} in ${citySelect.options[citySelect.selectedIndex].text}!`);
+                    
+                    // Reset button
+                    this.innerHTML = '🔍 SEARCH BIKES';
+                    this.disabled = false;
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
