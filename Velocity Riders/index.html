@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VelocityRiders - Preloader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            overflow: hidden;
+        }
+
+        /* Neural Network Background */
+        .neural-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .neural-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(102, 126, 234, 0.8);
+            border-radius: 50%;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .neural-connection {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.3), transparent);
+            animation: pulse-line 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.7; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+        }
+
+        @keyframes pulse-line {
+            0%, 100% { opacity: 0.2; transform: scaleX(0.5); }
+            50% { opacity: 0.8; transform: scaleX(1); }
+        }
+
+        /* 3D Particles */
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: particle-float 6s ease-in-out infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes particle-float {
+            0% { transform: translateY(100vh) translateX(0) rotateZ(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) translateX(100px) rotateZ(360deg); opacity: 0; }
+        }
+
+        /* Matrix-style Grid */
+        .matrix-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(102, 126, 234, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(102, 126, 234, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: grid-move 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes grid-move {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* Preloader Styles */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .preloader-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #C0C0C0;
+            box-shadow: 0 0 30px rgba(192, 192, 192, 0.8),
+                       inset 0 0 20px rgba(192, 192, 192, 0.3);
+            animation: pulse-3d 2s infinite;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .preloader-logo::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, rgba(102, 126, 234, 0.4), transparent);
+            animation: rotate 3s linear infinite;
+            z-index: -1;
+        }
+
+        .preloader-logo img {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            z-index: 1;
+        }
+
+        @keyframes pulse-3d {
+            0%, 100% { 
+                transform: scale(1) rotateY(0deg);
+                box-shadow: 0 0 30px rgba(192, 192, 192, 0.8),
+                           inset 0 0 20px rgba(192, 192, 192, 0.3);
+            }
+            50% { 
+                transform: scale(1.05) rotateY(180deg);
+                box-shadow: 0 0 40px rgba(102, 126, 234, 1),
+                           inset 0 0 25px rgba(102, 126, 234, 0.4);
+            }
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .welcome-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeInOut 0.4s ease-in-out;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .welcome-text::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            animation: text-shimmer 2s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes text-shimmer {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(10px) scale(0.9); }
+            50% { opacity: 1; transform: translateY(0) scale(1.05); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .progress-container {
+            width: 500px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: visible;
+            position: relative;
+            margin-bottom: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: progress-shimmer 2s ease-in-out infinite;
+        }
+
+        @keyframes progress-shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .bike-icon {
+            position: absolute;
+            top: -15px;
+            right: 100%;
+            width: 30px;
+            height: 30px;
+            transition: right 0.3s ease;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+            animation: bikeMove 0.3s ease;
+        }
+
+        .bike-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: brightness(1.2) contrast(1.1);
+        }
+
+        @keyframes bikeMove {
+            0% { transform: translateX(-5px) rotate(-5deg); }
+            50% { transform: translateX(2px) rotate(2deg); }
+            100% { transform: translateX(0) rotate(0deg); }
+        }
+
+        /* Percentage Display */
+        .percentage-display {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #667eea;
+            text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+            margin-bottom: 20px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(102, 126, 234, 0.5); }
+            to { text-shadow: 0 0 20px rgba(102, 126, 234, 0.8), 0 0 30px rgba(102, 126, 234, 0.4); }
+        }
+
+        /* Final Animation Styles */
+        .final-logo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 3px solid #C0C0C0;
+            box-shadow: 0 0 20px rgba(192, 192, 192, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .final-logo img {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+        }
+
+        .welcome-final {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .to-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            color: #667eea;
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .animate-slide-left {
+            animation: slideLeft 1s ease-in-out forwards;
+        }
+
+        .animate-slide-right {
+            animation: slideRight 1s ease-in-out forwards;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes slideLeft {
+            from { transform: translateX(0); }
+            to { transform: translateX(-120px); }
+        }
+
+        @keyframes slideRight {
+            from { transform: translateX(0); }
+            to { transform: translateX(120px); }
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: scale(0.8) translateY(10px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1) translateY(0); 
+            }
+        }
+
+        .preloader-fade-out {
+            animation: fadeOut 2s ease-in-out forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 0.3; }
+            100% { opacity: 0; }
+        }
+
+        .completion-message {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            text-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+            margin-top: 30px;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out 2s forwards;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .welcome-text, .welcome-final, .to-text {
+                font-size: 2rem;
+            }
+            
+            .progress-container {
+                width: 350px;
+            }
+            
+            .bike-icon {
+                width: 25px;
+                height: 25px;
+                top: -12px;
+            }
+            
+            .preloader-logo {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .preloader-logo img {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .final-logo {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .final-logo img {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .welcome-text, .welcome-final, .to-text {
+                font-size: 1.5rem;
+            }
+            
+            .progress-container {
+                width: 280px;
+            }
+        }
+
+        /* Loading dots animation */
+        .loading-dots {
+            display: inline-block;
+            position: relative;
+            margin-left: 10px;
+        }
+
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Neural Network Background -->
+    <div class="neural-background" id="neuralBackground"></div>
+    
+    <!-- Matrix Grid -->
+    <div class="matrix-grid"></div>
+    
+    <!-- 3D Particles Container -->
+    <div id="particlesContainer"></div>
+
+    <!-- Preloader -->
+    <div id="preloader" class="preloader">
+        <!-- Initial Loading Phase -->
+        <div id="initialPhase" class="flex flex-col items-center">
+            <!-- Logo -->
+            <div id="preloaderLogo" class="preloader-logo">
+                <img src="logo.jpeg" alt="VelocityRiders Logo">
+            </div>
+            
+            <!-- Welcome Text -->
+            <div id="welcomeText" class="welcome-text">Welcome</div>
+            
+            <!-- Progress Bar with Bike -->
+            <div id="progressContainer" class="progress-container">
+                <div id="progressBar" class="progress-bar"></div>
+                <div id="bikeIcon" class="bike-icon"><img src="bike-icon.png" alt="Bike Icon"></div>
+            </div>
+            
+            <!-- Percentage Display -->
+            <div id="percentageDisplay" class="percentage-display">0%</div>
+        </div>
+
+        <!-- Final Animation Elements (Hidden Initially) -->
+        <div id="finalAnimation" style="display: none;" class="flex items-center justify-center">
+            <div id="welcomeFinal" class="welcome-final">Welcome</div>
+            <div id="toText" class="to-text" style="display: none; margin: 0 15px;">to The</div>
+            <div id="logoFinal" class="final-logo" style="display: none;">
+                <img src="logo.jpeg" alt="VelocityRiders Logo">
+            </div>
+        </div>
+
+        <!-- Completion Message -->
+        <div id="completionMessage" class="completion-message" style="display: none;">
+            Loading Complete<span class="loading-dots"></span>
+        </div>
+    </div>
+
+    <script>
+        // Create Neural Network Background
+        function createNeuralNetwork() {
+            const container = document.getElementById('neuralBackground');
+            const nodeCount = 30;
+            const nodes = [];
+
+            // Create nodes
+            for (let i = 0; i < nodeCount; i++) {
+                const node = document.createElement('div');
+                node.className = 'neural-node';
+                node.style.left = Math.random() * 100 + '%';
+                node.style.top = Math.random() * 100 + '%';
+                node.style.animationDelay = Math.random() * 4 + 's';
+                container.appendChild(node);
+                nodes.push({
+                    element: node,
+                    x: parseFloat(node.style.left),
+                    y: parseFloat(node.style.top)
+                });
+            }
+
+            // Create connections between nearby nodes
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const distance = Math.sqrt(
+                        Math.pow(nodes[i].x - nodes[j].x, 2) + 
+                        Math.pow(nodes[i].y - nodes[j].y, 2)
+                    );
+                    
+                    if (distance < 25) {
+                        const connection = document.createElement('div');
+                        connection.className = 'neural-connection';
+                        
+                        const angle = Math.atan2(nodes[j].y - nodes[i].y, nodes[j].x - nodes[i].x) * 180 / Math.PI;
+                        const length = distance + '%';
+                        
+                        connection.style.left = nodes[i].x + '%';
+                        connection.style.top = nodes[i].y + '%';
+                        connection.style.width = length;
+                        connection.style.transform = `rotate(${angle}deg)`;
+                        connection.style.transformOrigin = '0 50%';
+                        connection.style.animationDelay = Math.random() * 3 + 's';
+                        
+                        container.appendChild(connection);
+                    }
+                }
+            }
+        }
+
+        // Create 3D Particles
+        function createParticles() {
+            const container = document.getElementById('particlesContainer');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (4 + Math.random() * 4) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Welcome texts in different languages
+        const welcomeTexts = [
+            'स्वागत',           // Hindi
+            'స్వాగతం',         // Telugu  
+            'வரவேற்கிறோம்',     // Tamil
+            'Bienvenue',       // French
+            'いらっしゃいませ',      // Japanese
+            'Willkommen',      // German
+            'Bem-vindo',       // Portuguese
+            'ਸੁਆਗਤ',           // Punjabi
+            'ಸ್ವಾಗತ',          // Kannada
+            '欢迎',            // Chinese
+            'स्वागतम्',          // Sanskrit
+            'Welcome'          // English
+        ];
+
+        let currentWelcomeIndex = 0;
+        let progress = 0;
+        const welcomeTextElement = document.getElementById('welcomeText');
+        const progressBar = document.getElementById('progressBar');
+        const bikeIcon = document.getElementById('bikeIcon');
+        const percentageDisplay = document.getElementById('percentageDisplay');
+
+        function updateWelcomeText() {
+            // Update welcome text
+            welcomeTextElement.textContent = welcomeTexts[currentWelcomeIndex];
+            welcomeTextElement.style.animation = 'none';
+            
+            // Trigger reflow to restart animation
+            void welcomeTextElement.offsetHeight;
+            welcomeTextElement.style.animation = 'fadeInOut 0.4s ease-in-out';
+            
+            // Calculate progress
+            progress = ((currentWelcomeIndex + 1) / welcomeTexts.length) * 100;
+            
+            // Update progress bar
+            progressBar.style.width = progress + '%';
+            
+            // Update percentage display
+            percentageDisplay.textContent = Math.round(progress) + '%';
+            
+            // Update bike position (move from right to left as progress increases)
+            bikeIcon.style.right = (100 - progress) + '%';
+            
+            // Trigger bike animation
+            bikeIcon.style.animation = 'none';
+            void bikeIcon.offsetHeight;
+            bikeIcon.style.animation = 'bikeMove 0.3s ease';
+            
+            currentWelcomeIndex++;
+            
+            if (currentWelcomeIndex < welcomeTexts.length) {
+                setTimeout(updateWelcomeText, 150);
+            } else {
+                // All languages shown, start final animation
+                setTimeout(startFinalAnimation, 300);
+            }
+        }
+
+        function startFinalAnimation() {
+            const initialPhase = document.getElementById('initialPhase');
+            const finalAnimation = document.getElementById('finalAnimation');
+            
+            // Fade out initial phase
+            initialPhase.style.transition = 'opacity 0.8s ease-in-out, transform 0.8s ease-in-out';
+            initialPhase.style.opacity = '0';
+            initialPhase.style.transform = 'translateY(-30px)';
+            
+            setTimeout(() => {
+                // Hide initial phase and show final animation
+                initialPhase.style.display = 'none';
+                finalAnimation.style.display = 'flex';
+                finalAnimation.style.alignItems = 'center';
+                finalAnimation.style.justifyContent = 'center';
+                
+                setTimeout(() => {
+                    // Start sliding animations
+                    const welcomeFinal = document.getElementById('welcomeFinal');
+                    const logoFinal = document.getElementById('logoFinal');
+                    const toText = document.getElementById('toText');
+                    
+                    // Slide welcome to left
+                    welcomeFinal.classList.add('animate-slide-left');
+                    
+                    // Show "to The" text earlier as welcome slides
+                    setTimeout(() => {
+                        toText.style.display = 'inline-block';
+                        toText.classList.add('animate-fade-in');
+                    }, 300);
+                    
+                    // Show and slide logo to right
+                    setTimeout(() => {
+                        logoFinal.style.display = 'flex';
+                        logoFinal.style.alignItems = 'center';
+                        logoFinal.style.justifyContent = 'center';
+                        logoFinal.classList.add('animate-slide-right');
+                    }, 400);
+                    
+                    setTimeout(() => {
+                        // Show completion message
+                        const completionMessage = document.getElementById('completionMessage');
+                        completionMessage.style.display = 'block';
+                        
+                        setTimeout(() => {
+                            // Final fade out
+                            const preloader = document.getElementById('preloader');
+                            preloader.classList.add('preloader-fade-out');
+                            
+                            setTimeout(() => {
+                                // Hide preloader completely
+                                preloader.style.display = 'none';
+                                
+                                // Redirect to main page
+                                console.log('Preloader complete! Ready to load main content.');
+                                window.location.href = 'hero.html';
+                                
+                            }, 2000);
+                        }, 1500);
+                    }, 1200);
+                }, 200);
+            }, 800);
+        }
+
+        // Initialize everything when page loads
+        window.addEventListener('load', () => {
+            // Create background effects
+            createNeuralNetwork();
+            createParticles();
+            
+            // Start preloader animation
+            setTimeout(() => {
+                updateWelcomeText();
+            }, 500);
+        });
+
+        // Prevent right-click and key shortcuts during preloader
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                (e.ctrlKey && e.key === 'u')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
